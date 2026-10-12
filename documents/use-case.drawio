@@ -1,0 +1,175 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Page-1" id="amuC5XdkFffzTKgL6VMs">
+    <mxGraphModel dx="2395" dy="2407" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="THEAH_FXrgHPHDyNCpfu-12" edge="1" parent="1" source="THEAH_FXrgHPHDyNCpfu-9" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.3333333333333333;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;startArrow=none;startFill=0;strokeWidth=1;endArrow=classic;endFill=1;" target="THEAH_FXrgHPHDyNCpfu-10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="THEAH_FXrgHPHDyNCpfu-9" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;" value="Actor" vertex="1">
+          <mxGeometry height="60" width="30" x="40" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="THEAH_FXrgHPHDyNCpfu-56" edge="1" parent="1" source="THEAH_FXrgHPHDyNCpfu-10" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="THEAH_FXrgHPHDyNCpfu-55" value="">
+          <mxGeometry relative="1" x="0.0029" as="geometry" />
+        </mxCell>
+        <mxCell id="THEAH_FXrgHPHDyNCpfu-58" edge="1" parent="1" source="THEAH_FXrgHPHDyNCpfu-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="THEAH_FXrgHPHDyNCpfu-57" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="THEAH_FXrgHPHDyNCpfu-10" parent="1" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;verticalAlign=top;align=center;" value="&lt;h3 style=&quot;&quot;&gt;create reservation&lt;/h3&gt;" vertex="1">
+          <mxGeometry height="60" width="235" x="440" y="-42" as="geometry" />
+        </mxCell>
+        <mxCell id="THEAH_FXrgHPHDyNCpfu-15" edge="1" parent="1" source="THEAH_FXrgHPHDyNCpfu-9" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.3333333333333333;exitDx=0;exitDy=0;exitPerimeter=0;startArrow=none;startFill=0;strokeWidth=1;endArrow=classic;endFill=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="60" y="210" as="sourcePoint" />
+            <mxPoint x="430" y="230" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="THEAH_FXrgHPHDyNCpfu-21" parent="1" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;verticalAlign=top;align=center;" value="&lt;h3 style=&quot;&quot;&gt;close reservation&lt;/h3&gt;" vertex="1">
+          <mxGeometry height="60" width="235" x="440" y="38" as="geometry" />
+        </mxCell>
+        <mxCell id="THEAH_FXrgHPHDyNCpfu-31" edge="1" parent="1" source="THEAH_FXrgHPHDyNCpfu-22" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="THEAH_FXrgHPHDyNCpfu-30" value="">
+          <mxGeometry relative="1" x="-0.0071" as="geometry" />
+        </mxCell>
+        <mxCell id="THEAH_FXrgHPHDyNCpfu-22" parent="1" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;verticalAlign=top;align=center;" value="&lt;h3 style=&quot;&quot;&gt;view available reservation&lt;/h3&gt;" vertex="1">
+          <mxGeometry height="60" width="235" x="435" y="118" as="geometry" />
+        </mxCell>
+        <mxCell id="THEAH_FXrgHPHDyNCpfu-26" parent="1" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;verticalAlign=top;align=center;" value="&lt;h3 style=&quot;&quot;&gt;view booking history&lt;/h3&gt;" vertex="1">
+          <mxGeometry height="60" width="235" x="435" y="198" as="geometry" />
+        </mxCell>
+        <mxCell id="THEAH_FXrgHPHDyNCpfu-30" parent="1" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;verticalAlign=top;" value="search / filter by categrory" vertex="1">
+          <mxGeometry height="50" width="192.5" x="750" y="123" as="geometry" />
+        </mxCell>
+        <mxCell id="THEAH_FXrgHPHDyNCpfu-34" edge="1" parent="1" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.3333333333333333;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;startArrow=none;startFill=0;strokeWidth=1;endArrow=classic;endFill=1;" target="THEAH_FXrgHPHDyNCpfu-35">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="66" y="480" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="THEAH_FXrgHPHDyNCpfu-35" parent="1" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;verticalAlign=top;align=center;" value="&lt;h3 style=&quot;&quot;&gt;comform reservations&lt;/h3&gt;" vertex="1">
+          <mxGeometry height="60" width="221" x="436" y="302" as="geometry" />
+        </mxCell>
+        <mxCell id="THEAH_FXrgHPHDyNCpfu-36" edge="1" parent="1" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.3333333333333333;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;startArrow=none;startFill=0;strokeWidth=1;endArrow=classic;endFill=1;" target="THEAH_FXrgHPHDyNCpfu-37">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="66" y="480" as="sourcePoint" />
+            <mxPoint x="436" y="260" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="THEAH_FXrgHPHDyNCpfu-37" parent="1" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;verticalAlign=top;align=center;" value="&lt;h3 style=&quot;&quot;&gt;reject reservations&lt;/h3&gt;" vertex="1">
+          <mxGeometry height="60" width="221" x="436" y="382" as="geometry" />
+        </mxCell>
+        <mxCell id="THEAH_FXrgHPHDyNCpfu-38" parent="1" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;verticalAlign=top;align=center;" value="&lt;h3 style=&quot;&quot;&gt;view users&amp;nbsp;&lt;br&gt;delete/block users&lt;/h3&gt;" vertex="1">
+          <mxGeometry height="78" width="235" x="429" y="570" as="geometry" />
+        </mxCell>
+        <mxCell id="THEAH_FXrgHPHDyNCpfu-39" parent="1" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;verticalAlign=top;align=center;" value="&lt;h3 style=&quot;&quot;&gt;view all reservations&lt;br&gt;create / delete / update&lt;/h3&gt;" vertex="1">
+          <mxGeometry height="96" width="235" x="428.25" y="456" as="geometry" />
+        </mxCell>
+        <mxCell id="THEAH_FXrgHPHDyNCpfu-40" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;" value="Actor" vertex="1">
+          <mxGeometry height="60" width="32" x="37" y="460" as="geometry" />
+        </mxCell>
+        <mxCell id="THEAH_FXrgHPHDyNCpfu-41" edge="1" parent="1" source="THEAH_FXrgHPHDyNCpfu-9" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.3333333333333333;exitDx=0;exitDy=0;exitPerimeter=0;startArrow=none;startFill=0;strokeWidth=1;endArrow=classic;endFill=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="THEAH_FXrgHPHDyNCpfu-21">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="250" y="220" as="sourcePoint" />
+            <mxPoint x="430" y="60" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="THEAH_FXrgHPHDyNCpfu-42" edge="1" parent="1" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.3333333333333333;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;startArrow=none;startFill=0;strokeWidth=1;endArrow=classic;endFill=1;" target="THEAH_FXrgHPHDyNCpfu-22">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="69" y="120" as="sourcePoint" />
+            <mxPoint x="439" y="-100" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="THEAH_FXrgHPHDyNCpfu-43" edge="1" parent="1" source="THEAH_FXrgHPHDyNCpfu-40" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;startArrow=none;startFill=0;strokeWidth=1;endArrow=classic;endFill=1;exitX=1;exitY=0.3333333333333333;exitDx=0;exitDy=0;exitPerimeter=0;" target="THEAH_FXrgHPHDyNCpfu-39">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="76.25" y="362" as="sourcePoint" />
+            <mxPoint x="669.25" y="283" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="THEAH_FXrgHPHDyNCpfu-44" edge="1" parent="1" source="THEAH_FXrgHPHDyNCpfu-40" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.3333333333333333;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;startArrow=none;startFill=0;strokeWidth=1;endArrow=classic;endFill=1;" target="THEAH_FXrgHPHDyNCpfu-38">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="60.00000000000023" y="588" as="sourcePoint" />
+            <mxPoint x="653" y="444" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="THEAH_FXrgHPHDyNCpfu-45" parent="1" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;verticalAlign=top;" value="search / filter by categrory" vertex="1">
+          <mxGeometry height="50" width="192.5" x="730" y="465" as="geometry" />
+        </mxCell>
+        <mxCell id="THEAH_FXrgHPHDyNCpfu-46" edge="1" parent="1" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="THEAH_FXrgHPHDyNCpfu-45" value="">
+          <mxGeometry relative="1" x="-0.0071" as="geometry">
+            <mxPoint x="667.25" y="495" as="sourcePoint" />
+            <mxPoint x="847.25" y="492" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="THEAH_FXrgHPHDyNCpfu-47" parent="1" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;verticalAlign=top;align=center;" value="&lt;h3 style=&quot;&quot;&gt;view all resourse&lt;br&gt;create / delete / update&lt;/h3&gt;" vertex="1">
+          <mxGeometry height="88" width="235" x="422" y="690" as="geometry" />
+        </mxCell>
+        <mxCell id="THEAH_FXrgHPHDyNCpfu-48" parent="1" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;verticalAlign=top;align=center;" value="&lt;h3 style=&quot;&quot;&gt;create maintainec and view manitains&lt;/h3&gt;" vertex="1">
+          <mxGeometry height="60" width="235" x="422" y="822" as="geometry" />
+        </mxCell>
+        <mxCell id="THEAH_FXrgHPHDyNCpfu-49" edge="1" parent="1" source="THEAH_FXrgHPHDyNCpfu-40" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;startArrow=none;startFill=0;strokeWidth=1;endArrow=classic;endFill=1;exitX=1;exitY=0.3333333333333333;exitDx=0;exitDy=0;exitPerimeter=0;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="61.000000000000114" y="550" as="sourcePoint" />
+            <mxPoint x="424" y="854" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="THEAH_FXrgHPHDyNCpfu-50" edge="1" parent="1" source="THEAH_FXrgHPHDyNCpfu-40" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;startArrow=none;startFill=0;strokeWidth=1;endArrow=classic;endFill=1;exitX=1;exitY=0.3333333333333333;exitDx=0;exitDy=0;exitPerimeter=0;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="50.000000000000114" y="507" as="sourcePoint" />
+            <mxPoint x="423" y="722" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="THEAH_FXrgHPHDyNCpfu-51" edge="1" parent="1" source="THEAH_FXrgHPHDyNCpfu-9" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.3333333333333333;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;startArrow=none;startFill=0;strokeWidth=1;endArrow=classic;endFill=1;" target="THEAH_FXrgHPHDyNCpfu-52">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="65" y="32" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="THEAH_FXrgHPHDyNCpfu-52" parent="1" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;verticalAlign=top;align=center;" value="&lt;h3 style=&quot;&quot;&gt;reginter&lt;/h3&gt;" vertex="1">
+          <mxGeometry height="60" width="235" x="435" y="-130" as="geometry" />
+        </mxCell>
+        <mxCell id="THEAH_FXrgHPHDyNCpfu-53" edge="1" parent="1" source="THEAH_FXrgHPHDyNCpfu-9" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.3333333333333333;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;startArrow=none;startFill=0;strokeWidth=1;endArrow=classic;endFill=1;" target="THEAH_FXrgHPHDyNCpfu-54">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="69" y="-70" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="THEAH_FXrgHPHDyNCpfu-54" parent="1" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;verticalAlign=top;align=center;" value="&lt;h3 style=&quot;&quot;&gt;log in&lt;/h3&gt;" vertex="1">
+          <mxGeometry height="60" width="235" x="439" y="-232" as="geometry" />
+        </mxCell>
+        <mxCell id="THEAH_FXrgHPHDyNCpfu-76" edge="1" parent="1" source="THEAH_FXrgHPHDyNCpfu-55" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="THEAH_FXrgHPHDyNCpfu-75" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="THEAH_FXrgHPHDyNCpfu-55" parent="1" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;verticalAlign=top;align=center;" value="&lt;h3 style=&quot;&quot;&gt;check avaialbility&lt;/h3&gt;" vertex="1">
+          <mxGeometry height="60" width="235" x="850" y="-150" as="geometry" />
+        </mxCell>
+        <mxCell id="THEAH_FXrgHPHDyNCpfu-57" parent="1" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;verticalAlign=top;align=center;" value="&lt;h3 style=&quot;&quot;&gt;save reservation&lt;/h3&gt;" vertex="1">
+          <mxGeometry height="60" width="235" x="755" y="-42" as="geometry" />
+        </mxCell>
+        <mxCell id="THEAH_FXrgHPHDyNCpfu-59" parent="1" style="shape=requiredInterface;html=1;verticalLabelPosition=bottom;sketch=0;" value="" vertex="1">
+          <mxGeometry height="78" width="10" x="675" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="THEAH_FXrgHPHDyNCpfu-60" parent="1" style="shape=requiredInterface;html=1;verticalLabelPosition=bottom;sketch=0;" value="" vertex="1">
+          <mxGeometry height="172" width="98" x="661" y="332" as="geometry" />
+        </mxCell>
+        <mxCell id="THEAH_FXrgHPHDyNCpfu-61" parent="1" style="shape=requiredInterface;html=1;verticalLabelPosition=bottom;sketch=0;" value="" vertex="1">
+          <mxGeometry height="78" width="59.25" x="664" y="415" as="geometry" />
+        </mxCell>
+        <mxCell id="THEAH_FXrgHPHDyNCpfu-62" parent="1" style="ellipse;whiteSpace=wrap;html=1;strokeColor=light-dark(#000000,#80FF00);" value="&lt;h3&gt;authendicate user&lt;/h3&gt;" vertex="1">
+          <mxGeometry height="70" width="200" x="1229" y="-150" as="geometry" />
+        </mxCell>
+        <mxCell id="THEAH_FXrgHPHDyNCpfu-66" parent="1" style="ellipse;whiteSpace=wrap;html=1;strokeColor=light-dark(#000000,#80FF00);" value="&lt;h3&gt;role base access&lt;/h3&gt;" vertex="1">
+          <mxGeometry height="70" width="200" x="1229" y="-60" as="geometry" />
+        </mxCell>
+        <mxCell id="THEAH_FXrgHPHDyNCpfu-67" parent="1" style="ellipse;whiteSpace=wrap;html=1;strokeColor=light-dark(#000000,#80FF00);" value="&lt;h3&gt;check resourse status&lt;/h3&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="70" width="200" x="1229" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="THEAH_FXrgHPHDyNCpfu-68" parent="1" style="ellipse;whiteSpace=wrap;html=1;strokeColor=light-dark(#000000,#80FF00);" value="&lt;h3&gt;check confilicts&lt;/h3&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="70" width="200" x="1229" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="THEAH_FXrgHPHDyNCpfu-69" parent="1" style="ellipse;whiteSpace=wrap;html=1;strokeColor=light-dark(#000000,#80FF00);" value="&lt;h3&gt;sent notification&lt;/h3&gt;" vertex="1">
+          <mxGeometry height="70" width="200" x="1229" y="215" as="geometry" />
+        </mxCell>
+        <mxCell id="THEAH_FXrgHPHDyNCpfu-75" parent="1" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;verticalAlign=top;align=center;" value="&lt;h3 style=&quot;&quot;&gt;&lt;span style=&quot;font-size: 14.04px;&quot;&gt;Free time&lt;/span&gt;&lt;/h3&gt;" vertex="1">
+          <mxGeometry height="60" width="235" x="1010" y="-260" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
