@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "../app/generated/prisma"
@@ -12,8 +7,111 @@ datasource db {
   provider = "postgresql"
 }
 
-model users{
-  email String @id
-  name String
-  city String
+enum UserStatus {
+  ACTIVE
+  BLOCKED
+  SUSPENDED
 }
+
+enum Roles {
+  USER
+  ADMIN
+}
+
+enum ResourceStatus {
+  ACTIVE
+  WAITING
+  INACTIVE
+}
+
+enum Maintenancestatus {
+  INPROGRESS
+  COMPLETE
+}
+
+enum ReservationStatus {
+  COMFORMED
+  PENDING
+}
+
+model Users{
+  id          String        @id @default(uuid())
+  email       String        @unique
+  firstName   String
+  lastName    String
+  password    String
+  phone       String        @unique
+  role        Roles         @default(USER)
+  status      UserStatus    @default(ACTIVE)
+  resavation  Reservation[]
+  updateAlt   DateTime      @default(now()) @db.Timestamptz(3)
+  createdAt   DateTime      @default(now()) @db.Timestamptz(3)
+
+  @@index([role, email])
+  @@map("users")
+}
+model ResourceCategory {
+  id            String           @id
+  name          String
+  description   String?          @db.Text
+  resource      Resource[]
+  updateAlt     DateTime         @default(now()) @db.Timestamptz(3)
+  createdAt     DateTime         @default(now()) @db.Timestamptz(3)
+
+  @@map("resource_categories")
+
+}
+
+model Resource {
+  id          String                @unique
+  categoryId  String                @unique
+  name        String
+  description String                @db.Text
+  code        String                @unique
+  location    String?
+  maxCapacity Int?
+  status      ResourceStatus        @default(ACTIVE)
+  maintenanceRecords ResourceMaintenance[]
+  resourceCategory ResourceCategory @relation(fields: [categoryId],references: [id], onDelete: Restrict,onUpdate: Cascade )
+  updateAlt     DateTime            @default(now()) @db.Timestamptz(3)
+  createdAt     DateTime            @default(now()) @db.Timestamptz(3)
+   
+  @@index([categoryId, status])
+  @@index([status, name])
+  @@map("resources")
+
+}
+
+model Reservation {
+  id          String          @id @unique
+  userId      String          
+  resourceId  String          
+  title       String?         @db.Text
+  user        Users           @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Cascade) // data base relational mapping
+  StartTime   DateTime        @db.Timestamptz(3)
+  Endtime     DateTime        @db.Timestamptz(3)
+  status ReservationStatus    @default(PENDING)
+  cancelledAt DateTime?       @db.Timestamptz(3)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt      @db.Timestamptz(3)
+  
+  @@index([resourceId, StartTime])
+  @@index([resourceId, status, StartTime])
+  @@index([userId, StartTime])
+  @@index([resourceId, Endtime])
+  @@map("reservations")
+}
+
+model ResourceMaintenance {
+  id          String                  @id @default(uuid())
+  description String  
+  resourceId  String
+  startTime   DateTime                @default(now()) @db.Timestamptz(3) 
+  endTime     DateTime 
+  maintenancestatus Maintenancestatus @default(COMPLETE)
+  resource    Resource                @relation(fields: [resourceId], references: [id], onDelete: Restrict, onUpdate: Cascade) 
+  createdAt DateTime                  @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime                  @updatedAt @db.Timestamptz(3)
+}
+
+
