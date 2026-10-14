@@ -5,11 +5,7 @@ import { AuthTokenPayload } from "./jwt";
 
 export type AllowedRole = "USER" | "ADMIN";
 
-/**
- * Validates that the request has a valid, non-expired JWT token and active user status.
- * Throws UnauthorizedError (401) if not logged in.
- * Throws ForbiddenError (403) if account is blocked or suspended.
- */
+ //Validates that the request has a valid, non-expired JWT token and active user status.
 export async function requireAuthUser(request: NextRequest): Promise<AuthTokenPayload> {
   const user = await getAuthenticatedUser(request);
 
@@ -28,11 +24,7 @@ export async function requireAuthUser(request: NextRequest): Promise<AuthTokenPa
   return user;
 }
 
-/**
- * Role-Based Access Control (RBAC) Guard
- * Validates that the authenticated user possesses one of the allowed roles.
- * Throws ForbiddenError (403) if role is insufficient.
- */
+//Role-Based Access Control (RBAC) Guard
 export async function requireRole(
   request: NextRequest,
   allowedRoles: AllowedRole[]
@@ -50,10 +42,7 @@ export async function requireRole(
   return user;
 }
 
-/**
- * Admin-Only Guard
- * Strictly restricts endpoint access to ADMIN users.
- */
+//Admin-Only Guard
 export async function requireAdmin(request: NextRequest): Promise<AuthTokenPayload> {
   return await requireRole(request, ["ADMIN"]);
 }
