@@ -18,6 +18,7 @@ import {
   UserRound,
   UsersRound,
   Waves,
+  Wrench,
   XCircle,
 } from "lucide-react";
 
@@ -51,6 +52,14 @@ type Reservation = {
   status: "PENDING" | "COMFORMED";
   cancelledAt: string | null;
   resource: { id: string; name: string; code: string; location: string | null } | null;
+};
+type Maintenance = {
+  id: string;
+  resourceId: string;
+  description: string;
+  startTime: string;
+  endTime: string;
+  maintenancestatus: "INPROGRESS" | "COMPLETE";
 };
 
 async function request<T>(url: string, init?: RequestInit) {
@@ -90,6 +99,7 @@ export default function UserDashboard() {
   const [user, setUser] = useState<User | null>(null);
   const [resources, setResources] = useState<Resource[]>([]);
   const [bookings, setBookings] = useState<Reservation[]>([]);
+  const [maintenance, setMaintenance] = useState<Maintenance[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -100,13 +110,15 @@ export default function UserDashboard() {
       router.replace("/admin");
       return;
     }
-    const [resourceData, bookingData] = await Promise.all([
+    const [resourceData, bookingData, maintenanceData] = await Promise.all([
       request<{ resources: Resource[] }>("/api/resources"),
       request<{ reservations: Reservation[] }>("/api/reservations"),
+      request<{ maintenances: Maintenance[] }>("/api/maintenance"),
     ]);
     setUser(profile);
     setResources(resourceData.resources ?? []);
     setBookings(bookingData.reservations ?? []);
+    setMaintenance(maintenanceData.maintenances ?? []);
   }, [router]);
 
   useEffect(() => {
@@ -130,6 +142,16 @@ export default function UserDashboard() {
   }, [loadDashboard, router]);
 
   const latestBookings = useMemo(() => bookings.slice(0, 4), [bookings]);
+  const maintenanceByResource = useMemo(() => {
+    const result = new Map<string, Maintenance>();
+    for (const record of maintenance) {
+      const current = result.get(record.resourceId);
+      if (!current || (record.maintenancestatus === "INPROGRESS" && current.maintenancestatus !== "INPROGRESS")) {
+        result.set(record.resourceId, record);
+      }
+    }
+    return result;
+  }, [maintenance]);
   const availableCount = resources.filter((resource) => resource.status === "ACTIVE").length;
 
   async function logout() {
@@ -190,7 +212,7 @@ export default function UserDashboard() {
 
             <section className="user-section-block user-latest-block">
               <SectionHeading title="Latest bookings" description="Your most recent reservation activity." action="View all bookings" onAction={() => setSection("bookings")} />
-              {latestBookings.length === 0 ? <EmptyPanel icon={CalendarDays} title="No bookings yet" message="Your reservation requests will appear here." /> : <div className="user-booking-list">{latestBookings.map((booking) => <BookingRow key={booking.id} booking={booking} />)}</div>}
+              {latestBookings.length === 0 ? <EmptyPanel icon={CalendarDays} title="No bookings yet" message="Your reservation requests will appear here." /> : <div className="user-booking-list">{latestBookings.map((booking) => <BookingRow key={booking.id} booking={booking} maintenance={maintenanceByResource.get(booking.resourceId)} />)}</div>}
             </section>
           </>
         )}
@@ -204,7 +226,7 @@ export default function UserDashboard() {
 
         {section === "resources" && (resources.length === 0 ? <EmptyPanel icon={DoorOpen} title="No resources yet" message="There are no resources available right now." /> : <div className="user-resource-grid user-resource-grid-full">{resources.map((resource) => <ResourceCard key={resource.id} resource={resource} />)}</div>)}
 
-        {section === "bookings" && (bookings.length === 0 ? <EmptyPanel icon={CalendarDays} title="No bookings yet" message="Your reservation requests will appear here." /> : <div className="user-booking-list user-booking-list-full">{bookings.map((booking) => <BookingRow key={booking.id} booking={booking} />)}</div>)}
+        {section === "bookings" && (bookings.length === 0 ? <EmptyPanel icon={CalendarDays} title="No bookings yet" message="Your reservation requests will appear here." /> : <div className="user-booking-list user-booking-list-full">{bookings.map((booking) => <BookingRow key={booking.id} booking={booking} maintenance={maintenanceByResource.get(booking.resourceId)} />)}</div>)}
       </div>
       <footer className="user-footer"><span>primewave<span>lab</span></span><span>Your space, ready when you are.</span></footer>
     </main>
@@ -224,10 +246,24 @@ function ResourceCard({ resource }: { resource: Resource }) {
   return <article className="user-resource-card"><div className="user-resource-card-top"><span className="user-resource-icon"><DoorOpen size={20} /></span><span className={`user-status ${status.className}`}><i />{status.label}</span></div><span className="user-resource-category">{resource.resourceCategory?.name ?? "Resource"}</span><h3>{resource.name}</h3><p className="user-resource-description">{resource.description || "Workspace resource ready for your next project."}</p><div className="user-resource-meta"><span><DoorOpen size={14} />{resource.code}</span>{resource.location && <span><MapPin size={14} />{resource.location}</span>}{resource.maxCapacity != null && <span><UsersRound size={14} />Up to {resource.maxCapacity}</span>}</div></article>;
 }
 
-function BookingRow({ booking }: { booking: Reservation }) {
+function BookingRow({ booking, maintenance }: { booking: Reservation; maintenance?: Maintenance }) {
   const status = bookingStatus(booking);
   const StatusIcon = status.Icon;
-  return <article className="user-booking-row"><span className="user-booking-icon"><CalendarDays size={19} /></span><div className="user-booking-main"><strong>{booking.title || booking.resource?.name || "Resource reservation"}</strong><span>{booking.resource?.name ?? "Resource details unavailable"}{booking.resource?.code ? ` · ${booking.resource.code}` : ""}</span></div><div className="user-booking-time"><strong>{formatDate(booking.StartTime, true)}</strong><span>Until {formatDate(booking.Endtime, true)}</span></div><span className={`user-status ${status.className}`}><StatusIcon size={13} />{status.label}</span></article>;
+  const maintenanceInProgress = maintenance?.maintenancestatus === "INPROGRESS";
+  return (
+    <article className="user-booking-row">
+      <span className="user-booking-icon"><CalendarDays size={19} /></span>
+      <div className="user-booking-main"><strong>{booking.title || booking.resource?.name || "Resource reservation"}</strong><span>{booking.resource?.name ?? "Resource details unavailable"}{booking.resource?.code ? ` · ${booking.resource.code}` : ""}</span></div>
+      <div className="user-booking-time"><strong>{formatDate(booking.StartTime, true)}</strong><span>Until {formatDate(booking.Endtime, true)}</span></div>
+      <span className={`user-status ${status.className}`}><StatusIcon size={13} />{status.label}</span>
+      <div className={`user-booking-maintenance ${maintenanceInProgress ? "maintenance-active" : maintenance ? "maintenance-complete" : "maintenance-none"}`}>
+        <Wrench size={14} />
+        <span className="maintenance-label">Resource maintenance</span>
+        <strong>{maintenanceInProgress ? "In progress" : maintenance ? "Completed" : "No maintenance recorded"}</strong>
+        {maintenance && <small>{maintenance.description} · {formatDate(maintenanceInProgress ? maintenance.endTime : maintenance.startTime)}</small>}
+      </div>
+    </article>
+  );
 }
 
 function ProfileField({ icon: Icon, label, value }: { icon: typeof Mail; label: string; value: string }) {
