@@ -190,7 +190,7 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
         title: validated.title || null,
         StartTime: start,
         Endtime: end,
-        status: "COMFORMED",
+        status: "PENDING",
       },
       include: {
         user: {
@@ -218,7 +218,7 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
         },
       },
     },
-    "Resource booked successfully",
+    "Reservation request submitted successfully",
     201
   );
 });

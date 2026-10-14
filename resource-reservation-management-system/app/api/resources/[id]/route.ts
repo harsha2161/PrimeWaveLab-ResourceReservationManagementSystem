@@ -158,6 +158,17 @@ export const DELETE = withErrorHandler(
       throw new NotFoundError(`Resource with ID '${id}' was not found`);
     }
 
+    const [reservationCount, maintenanceCount] = await Promise.all([
+      prisma.reservation.count({ where: { resourceId: existingResource.id } }),
+      prisma.resourceMaintenance.count({ where: { resourceId: existingResource.id } }),
+    ]);
+
+    if (reservationCount > 0 || maintenanceCount > 0) {
+      throw new ConflictError(
+        "This resource has reservation or maintenance history and cannot be deleted. Set its status to INACTIVE instead."
+      );
+    }
+
     //Delete resource
     await prisma.resource.delete({
       where: { id: existingResource.id },
