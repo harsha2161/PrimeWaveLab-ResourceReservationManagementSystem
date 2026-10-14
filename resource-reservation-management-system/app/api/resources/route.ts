@@ -70,6 +70,21 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
   );
 });
 
+// Helper function to auto-generate unique resource code in simple format (e.g. RES001, RES002)
+async function generateResourceCode(): Promise<string> {
+  const count = await prisma.resource.count();
+  let nextNum = count + 1;
+  let code = `RES${String(nextNum).padStart(3, "0")}`;
+
+  // Ensure uniqueness in database
+  while (await prisma.resource.findUnique({ where: { code } })) {
+    nextNum++;
+    code = `RES${String(nextNum).padStart(3, "0")}`;
+  }
+
+  return code;
+}
+
 //create new resourse
 export const POST = withErrorHandler(async (request: NextRequest) => {
  
@@ -94,15 +109,22 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
     );
   }
 
-  //Check duplicate resource code
-  const existingCode = await prisma.resource.findUnique({
-    where: { code: validatedData.code },
-  });
+  // Resolve resource code: auto-generate in RES001 format if not provided, or validate uniqueness if provided
+  let resourceCode = validatedData.code?.trim();
 
-  if (existingCode) {
-    throw new ConflictError(
-      `Resource with code '${validatedData.code}' already exists`
-    );
+  if (!resourceCode) {
+    resourceCode = await generateResourceCode();
+  } else {
+    // Check duplicate resource code
+    const existingCode = await prisma.resource.findUnique({
+      where: { code: resourceCode },
+    });
+
+    if (existingCode) {
+      throw new ConflictError(
+        `Resource with code '${resourceCode}' already exists`
+      );
+    }
   }
 
   //Generate UUID for resource ID
@@ -114,7 +136,7 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
       id: resourceId,
       name: validatedData.name,
       description: validatedData.description,
-      code: validatedData.code,
+      code: resourceCode,
       categoryId: validatedData.categoryId,
       location: validatedData.location || null,
       maxCapacity: validatedData.maxCapacity || null,
