@@ -99,6 +99,7 @@ model Reservation {
   @@index([resourceId, status, StartTime])
   @@index([userId, StartTime])
   @@index([resourceId, Endtime])
+  // SQL migration adds a PostgreSQL exclusion constraint for non-cancelled time ranges.
   @@map("reservations")
 }
 

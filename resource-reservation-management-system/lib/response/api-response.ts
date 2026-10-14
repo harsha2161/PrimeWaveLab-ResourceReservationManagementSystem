@@ -50,9 +50,44 @@ export function formatZodErrors(error: ZodError): Record<string, string[]> {
   return formatted;
 }
 
+function isReservationOverlapConstraintError(error: unknown): boolean {
+  const constraintName = "reservations_no_overlapping_active_time";
+  const visited = new Set<object>();
+  let current: unknown = error;
+
+  while (typeof current === "object" && current !== null && !visited.has(current)) {
+    visited.add(current);
+    const candidate = current as {
+      code?: unknown;
+      message?: unknown;
+      meta?: unknown;
+      cause?: unknown;
+    };
+    const code = String(candidate.code ?? "");
+    const details = `${String(candidate.message ?? "")} ${JSON.stringify(candidate.meta ?? {})}`.toLowerCase();
+
+    if (code === "23P01" || details.includes(constraintName)) {
+      return true;
+    }
+
+    current = candidate.cause;
+  }
+
+  return false;
+}
+
 
  //Centralized Exception Handler for all API Route Exceptions
 export function handleApiException(error: unknown): NextResponse {
+
+  // Concurrent reservation inserts can race past the application-level precheck.
+  // The PostgreSQL exclusion constraint is authoritative and becomes a conflict response.
+  if (isReservationOverlapConstraintError(error)) {
+    return errorResponse(
+      "This resource is already booked during the selected time period. Please select another slot or resource.",
+      409
+    );
+  }
  
   // Domain / Application Exceptions
   if (error instanceof AppError) {
