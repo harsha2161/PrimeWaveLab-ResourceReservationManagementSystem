@@ -1,20 +1,15 @@
 import bcrypt from "bcryptjs";
 import { NextRequest } from "next/server";
-import { verifyAuthToken, AuthTokenPayload } from "./jwt";
-import { UnauthorizedError } from "./security/errors";
+import { UnauthorizedError } from "./errors";
+import { AuthTokenPayload, verifyAuthToken } from "./jwt";
 
 const SALT_ROUNDS = 12;
 
-/**
- * Hash a plain text password securely using bcrypt
- */
+ //Hash a plain text password securely using bcrypt
 export async function hashPassword(password: string): Promise<string> {
   return await bcrypt.hash(password, SALT_ROUNDS);
 }
-
-/**
- * Compare plain text password against hashed password
- */
+//Compare plain text password against hashed password
 export async function comparePassword(
   plainText: string,
   hashedPassword: string
@@ -22,25 +17,22 @@ export async function comparePassword(
   return await bcrypt.compare(plainText, hashedPassword);
 }
 
-/**
- * Sanitize user object by stripping sensitive fields such as password
- */
+
+ //remove sensitive fields like password
 export function sanitizeUser<T extends { password?: string }>(user: T): Omit<T, "password"> {
   const { password: _, ...safeUser } = user;
   return safeUser;
 }
 
-/**
- * Extract auth token from incoming request (Cookie or Authorization Bearer header)
- */
+ //Extract auth token from incoming request (Cookie or Authorization Bearer header)
 export function getAuthTokenFromRequest(request: NextRequest): string | null {
-  // 1. Check HttpOnly cookie first
+  //Check HttpOnly cookie first
   const cookieToken = request.cookies.get("auth_token")?.value;
   if (cookieToken) {
     return cookieToken;
   }
 
-  // 2. Check Authorization Header (Bearer <token>)
+  //Check Authorization Header
   const authHeader = request.headers.get("authorization");
   if (authHeader && authHeader.startsWith("Bearer ")) {
     return authHeader.substring(7).trim();
@@ -49,9 +41,7 @@ export function getAuthTokenFromRequest(request: NextRequest): string | null {
   return null;
 }
 
-/**
- * Authenticate request and return token payload if valid, or null
- */
+//Authenticate request and return token payload if valid, or null
 export async function getAuthenticatedUser(
   request: NextRequest
 ): Promise<AuthTokenPayload | null> {
@@ -62,9 +52,7 @@ export async function getAuthenticatedUser(
   return await verifyAuthToken(token);
 }
 
-/**
- * Enforce authentication. Throws UnauthorizedError exception if not authenticated.
- */
+//Enforce authentication. Throws UnauthorizedError exception if not authenticated.
 export async function requireAuth(request: NextRequest): Promise<AuthTokenPayload> {
   const user = await getAuthenticatedUser(request);
   if (!user) {
@@ -72,3 +60,5 @@ export async function requireAuth(request: NextRequest): Promise<AuthTokenPayloa
   }
   return user;
 }
+
+export { requireRole, requireAdmin, requireAuthUser } from "./role-guard";
