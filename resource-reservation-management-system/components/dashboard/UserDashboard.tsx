@@ -1,9 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import type { FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import {
   ArrowRight,
+  CalendarClock,
   CalendarCheck,
   CalendarDays,
   CheckCircle2,
@@ -19,6 +21,7 @@ import {
   UsersRound,
   Waves,
   Wrench,
+  X,
   XCircle,
 } from "lucide-react";
 
@@ -83,7 +86,7 @@ function formatDate(value: string, time = false) {
 
 function bookingStatus(reservation: Reservation) {
   if (reservation.cancelledAt) return { label: "Cancelled", className: "user-status-cancelled", Icon: XCircle };
-  if (reservation.status === "COMFORMED") return { label: "Confirmed", className: "user-status-confirmed", Icon: CheckCircle2 };
+  if (reservation.status === "COMFORMED") return { label: "Booking complete", className: "user-status-confirmed", Icon: CheckCircle2 };
   return { label: "Pending", className: "user-status-pending", Icon: Hourglass };
 }
 
@@ -100,6 +103,9 @@ export default function UserDashboard() {
   const [resources, setResources] = useState<Resource[]>([]);
   const [bookings, setBookings] = useState<Reservation[]>([]);
   const [maintenance, setMaintenance] = useState<Maintenance[]>([]);
+  const [bookingResource, setBookingResource] = useState<Resource | null>(null);
+  const [bookingBusy, setBookingBusy] = useState(false);
+  const [notice, setNotice] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -141,6 +147,15 @@ export default function UserDashboard() {
     return () => { active = false; };
   }, [loadDashboard, router]);
 
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      void request<{ reservations: Reservation[] }>("/api/reservations")
+        .then((data) => setBookings(data.reservations ?? []))
+        .catch(() => undefined);
+    }, 15000);
+    return () => window.clearInterval(interval);
+  }, []);
+
   const latestBookings = useMemo(() => bookings.slice(0, 4), [bookings]);
   const maintenanceByResource = useMemo(() => {
     const result = new Map<string, Maintenance>();
@@ -157,6 +172,47 @@ export default function UserDashboard() {
   async function logout() {
     await fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" });
     router.replace("/login");
+  }
+
+  async function submitBooking(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!bookingResource) return;
+    const formData = new FormData(event.currentTarget);
+    const startTime = new Date(String(formData.get("startTime") ?? ""));
+    const endTime = new Date(String(formData.get("endTime") ?? ""));
+    if (Number.isNaN(startTime.getTime()) || Number.isNaN(endTime.getTime()) || endTime <= startTime) {
+      setError("Choose a valid start and end time. The end time must be later than the start time.");
+      return;
+    }
+
+    setBookingBusy(true);
+    setError("");
+    setNotice("");
+    try {
+      await request("/api/reservations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          resourceId: bookingResource.id,
+          title: String(formData.get("title") ?? "").trim() || undefined,
+          startTime: startTime.toISOString(),
+          endTime: endTime.toISOString(),
+        }),
+      });
+      await loadDashboard();
+      setBookingResource(null);
+      setSection("bookings");
+      setNotice("Booking request sent. It will show as complete after an administrator confirms it.");
+    } catch (cause) {
+      const failure = cause as Error & { status?: number };
+      if (failure.status === 401) {
+        router.replace("/login");
+        return;
+      }
+      setError(failure.message || "Could not submit your booking request.");
+    } finally {
+      setBookingBusy(false);
+    }
   }
 
   if (loading) return <main className="user-loading"><span className="user-loader"><RefreshCw size={20} /></span><p>Opening your workspace…</p></main>;
@@ -191,6 +247,7 @@ export default function UserDashboard() {
         </div>
 
         {error && <div className="user-error" role="alert"><span>!</span>{error}</div>}
+        {notice && <div className="user-notice" role="status"><CheckCircle2 size={16} /><span>{notice}</span><button type="button" onClick={() => setNotice("")} aria-label="Dismiss message"><X size={15} /></button></div>}
 
         {section === "home" && (
           <>
@@ -207,7 +264,7 @@ export default function UserDashboard() {
 
             <section className="user-section-block">
               <SectionHeading title="Resources for your work" description="A few spaces and tools available in your workspace." action="View all resources" onAction={() => setSection("resources")} />
-              {resources.length === 0 ? <EmptyPanel icon={DoorOpen} title="No resources yet" message="There are no resources available right now." /> : <div className="user-resource-grid">{resources.slice(0, 4).map((resource) => <ResourceCard key={resource.id} resource={resource} />)}</div>}
+              {resources.length === 0 ? <EmptyPanel icon={DoorOpen} title="No resources yet" message="There are no resources available right now." /> : <div className="user-resource-grid">{resources.slice(0, 4).map((resource) => <ResourceCard key={resource.id} resource={resource} onBook={() => { setError(""); setBookingResource(resource); }} />)}</div>}
             </section>
 
             <section className="user-section-block user-latest-block">
@@ -224,11 +281,12 @@ export default function UserDashboard() {
           </section>
         )}
 
-        {section === "resources" && (resources.length === 0 ? <EmptyPanel icon={DoorOpen} title="No resources yet" message="There are no resources available right now." /> : <div className="user-resource-grid user-resource-grid-full">{resources.map((resource) => <ResourceCard key={resource.id} resource={resource} />)}</div>)}
+        {section === "resources" && (resources.length === 0 ? <EmptyPanel icon={DoorOpen} title="No resources yet" message="There are no resources available right now." /> : <div className="user-resource-grid user-resource-grid-full">{resources.map((resource) => <ResourceCard key={resource.id} resource={resource} onBook={() => { setError(""); setBookingResource(resource); }} />)}</div>)}
 
         {section === "bookings" && (bookings.length === 0 ? <EmptyPanel icon={CalendarDays} title="No bookings yet" message="Your reservation requests will appear here." /> : <div className="user-booking-list user-booking-list-full">{bookings.map((booking) => <BookingRow key={booking.id} booking={booking} maintenance={maintenanceByResource.get(booking.resourceId)} />)}</div>)}
       </div>
       <footer className="user-footer"><span>primewave<span>lab</span></span><span>Your space, ready when you are.</span></footer>
+      {bookingResource && <BookingModal resource={bookingResource} busy={bookingBusy} error={error} onClose={() => { if (!bookingBusy) setBookingResource(null); }} onSubmit={submitBooking} />}
     </main>
   );
 }
@@ -241,9 +299,9 @@ function SectionHeading({ title, description, action, onAction }: { title: strin
   return <div className="user-section-heading"><div><h2>{title}</h2><p>{description}</p></div><button type="button" onClick={onAction}>{action}<ArrowRight size={15} /></button></div>;
 }
 
-function ResourceCard({ resource }: { resource: Resource }) {
+function ResourceCard({ resource, onBook }: { resource: Resource; onBook: () => void }) {
   const status = resourceStatus(resource.status);
-  return <article className="user-resource-card"><div className="user-resource-card-top"><span className="user-resource-icon"><DoorOpen size={20} /></span><span className={`user-status ${status.className}`}><i />{status.label}</span></div><span className="user-resource-category">{resource.resourceCategory?.name ?? "Resource"}</span><h3>{resource.name}</h3><p className="user-resource-description">{resource.description || "Workspace resource ready for your next project."}</p><div className="user-resource-meta"><span><DoorOpen size={14} />{resource.code}</span>{resource.location && <span><MapPin size={14} />{resource.location}</span>}{resource.maxCapacity != null && <span><UsersRound size={14} />Up to {resource.maxCapacity}</span>}</div></article>;
+  return <article className="user-resource-card"><div className="user-resource-card-top"><span className="user-resource-icon"><DoorOpen size={20} /></span><span className={`user-status ${status.className}`}><i />{status.label}</span></div><span className="user-resource-category">{resource.resourceCategory?.name ?? "Resource"}</span><h3>{resource.name}</h3><p className="user-resource-description">{resource.description || "Workspace resource ready for your next project."}</p><div className="user-resource-meta"><span><DoorOpen size={14} />{resource.code}</span>{resource.location && <span><MapPin size={14} />{resource.location}</span>}{resource.maxCapacity != null && <span><UsersRound size={14} />Up to {resource.maxCapacity}</span>}</div><button className="user-book-resource" type="button" disabled={resource.status !== "ACTIVE"} onClick={onBook}>{resource.status === "ACTIVE" ? "Book resource" : "Unavailable"}<ArrowRight size={14} /></button></article>;
 }
 
 function BookingRow({ booking, maintenance }: { booking: Reservation; maintenance?: Maintenance }) {
@@ -272,4 +330,31 @@ function ProfileField({ icon: Icon, label, value }: { icon: typeof Mail; label: 
 
 function EmptyPanel({ icon: Icon, title, message }: { icon: typeof DoorOpen; title: string; message: string }) {
   return <div className="user-empty-panel"><span><Icon size={22} /></span><strong>{title}</strong><p>{message}</p></div>;
+}
+
+function BookingModal({ resource, busy, error, onClose, onSubmit }: { resource: Resource; busy: boolean; error: string; onClose: () => void; onSubmit: (event: FormEvent<HTMLFormElement>) => void }) {
+  const localDateTime = (date: Date) => {
+    const offset = date.getTimezoneOffset() * 60_000;
+    return new Date(date.getTime() - offset).toISOString().slice(0, 16);
+  };
+  const initialStart = new Date(Date.now() + 60 * 60 * 1000);
+  initialStart.setMinutes(0, 0, 0);
+  const initialEnd = new Date(initialStart.getTime() + 60 * 60 * 1000);
+  return (
+    <div className="user-modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget && !busy) onClose(); }}>
+      <section className="user-booking-modal" role="dialog" aria-modal="true" aria-labelledby="booking-modal-title">
+        <header className="user-modal-heading"><div><span className="user-modal-icon"><CalendarClock size={19} /></span><div><h2 id="booking-modal-title">Book a resource</h2><p>{resource.name} · {resource.code}</p></div></div><button className="user-modal-close" type="button" onClick={onClose} disabled={busy} aria-label="Close booking form"><X size={17} /></button></header>
+        <form className="user-booking-form" onSubmit={onSubmit}>
+          {error && <div className="user-booking-modal-error" role="alert">{error}</div>}
+          <label className="user-booking-field"><span>Booking title <small>Optional</small></span><input name="title" type="text" maxLength={255} placeholder="What are you using it for?" /></label>
+          <div className="user-booking-form-row">
+            <label className="user-booking-field"><span>Start time</span><input name="startTime" type="datetime-local" min={localDateTime(new Date())} defaultValue={localDateTime(initialStart)} required /></label>
+            <label className="user-booking-field"><span>End time</span><input name="endTime" type="datetime-local" min={localDateTime(initialStart)} defaultValue={localDateTime(initialEnd)} required /></label>
+          </div>
+          <p className="user-booking-hint"><Hourglass size={14} /> Your request will stay pending until an administrator confirms it.</p>
+          <div className="user-modal-actions"><button className="user-modal-cancel" type="button" onClick={onClose} disabled={busy}>Cancel</button><button className="user-modal-submit" type="submit" disabled={busy}>{busy ? "Sending request…" : "Send booking request"}<ArrowRight size={15} /></button></div>
+        </form>
+      </section>
+    </div>
+  );
 }
