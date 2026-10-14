@@ -10,9 +10,7 @@ export interface AuthTokenPayload {
 const JWT_SECRET = process.env.JWT_SECRET || "fallback-secret-key-change-in-production-at-least-32-chars";
 const encodedKey = new TextEncoder().encode(JWT_SECRET);
 
-/**
- * Sign a new JWT token with user credentials
- */
+//Sign a new JWT token with user credentials
 export async function signAuthToken(
   payload: AuthTokenPayload,
   expiresIn: string = "7d"
@@ -24,10 +22,7 @@ export async function signAuthToken(
     .setExpirationTime(expiresIn)
     .sign(encodedKey);
 }
-
-/**
- * Verify and decode an existing JWT token
- */
+ //Verify and decode an existing JWT token
 export async function verifyAuthToken(
   token: string
 ): Promise<AuthTokenPayload | null> {
