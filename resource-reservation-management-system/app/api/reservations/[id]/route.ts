@@ -3,7 +3,12 @@ import prisma from "@/lib/prisma";
 import { requireAuthUser } from "@/lib/security/role-guard";
 import { computeProgressStatus } from "@/lib/security/validations/reservation";
 import { withErrorHandler, successResponse } from "@/lib/response/api-response";
-import {BadRequestError,ForbiddenError,NotFoundError,} from "@/lib/security/errors";
+import {
+  BadRequestError,
+  ConflictError,
+  ForbiddenError,
+  NotFoundError,
+} from "@/lib/security/errors";
 
 interface RouteContext {
   params: Promise<{ id: string }> | { id: string };
@@ -116,3 +121,127 @@ export const DELETE = withErrorHandler(
     return successResponse(null, "Reservation cancelled successfully");
   }
 );
+
+// PATCH: Admin approves/confirms or rejects a reservation
+export const PATCH = withErrorHandler(
+  async (request: NextRequest, context: RouteContext) => {
+    const authUser = await requireAuthUser(request);
+    const { id } = await Promise.resolve(context.params);
+
+    if (!id) {
+      throw new BadRequestError("Reservation ID parameter is required");
+    }
+
+    // Only Admin can confirm or approve reservations
+    if (authUser.role !== "ADMIN") {
+      throw new ForbiddenError(
+        "Only administrators can confirm or approve reservations"
+      );
+    }
+
+    const body = await request.json().catch(() => {
+      throw new BadRequestError("Invalid JSON request body");
+    });
+
+    const { status, action } = body;
+    const requested =
+      status?.toUpperCase() ||
+      (action === "CONFIRM"
+        ? "COMFORMED"
+        : action === "REJECT"
+        ? "CANCEL"
+        : null);
+
+    if (
+      !requested ||
+      !["COMFORMED", "PENDING", "CANCEL", "REJECT"].includes(requested)
+    ) {
+      throw new BadRequestError(
+        "Invalid status or action. Allowed values: COMFORMED, PENDING, or CANCEL/REJECT"
+      );
+    }
+
+    const reservation = await prisma.reservation.findUnique({
+      where: { id },
+    });
+
+    if (!reservation) {
+      throw new NotFoundError(`Reservation with ID '${id}' was not found`);
+    }
+
+    if (reservation.cancelledAt && requested !== "CANCEL") {
+      throw new BadRequestError(
+        "Cannot update a reservation that has already been cancelled"
+      );
+    }
+
+    if (requested === "CANCEL" || requested === "REJECT") {
+      const updated = await prisma.reservation.update({
+        where: { id },
+        data: {
+          cancelledAt: new Date(),
+        },
+      });
+      return successResponse(
+        updated,
+        "Reservation rejected and cancelled successfully"
+      );
+    }
+
+    if (requested === "COMFORMED") {
+      // Check for overlapping confirmed reservations on the same resource
+      const conflict = await prisma.reservation.findFirst({
+        where: {
+          id: { not: id },
+          resourceId: reservation.resourceId,
+          status: "COMFORMED",
+          cancelledAt: null,
+          StartTime: { lt: reservation.Endtime },
+          Endtime: { gt: reservation.StartTime },
+        },
+      });
+
+      if (conflict) {
+        throw new ConflictError(
+          "Cannot confirm this reservation: Another reservation is already confirmed for this resource during this time slot."
+        );
+      }
+
+      const updated = await prisma.reservation.update({
+        where: { id },
+        data: {
+          status: "COMFORMED",
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              email: true,
+              phone: true,
+            },
+          },
+        },
+      });
+
+      return successResponse(
+        {
+          reservation: {
+            ...updated,
+            progressStatus: computeProgressStatus(updated),
+          },
+        },
+        "Reservation confirmed successfully by administrator"
+      );
+    }
+
+    const updated = await prisma.reservation.update({
+      where: { id },
+      data: { status: "PENDING" },
+    });
+
+    return successResponse(updated, "Reservation reset to pending status");
+  }
+);
+
