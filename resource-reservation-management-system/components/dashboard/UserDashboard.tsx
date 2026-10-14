@@ -105,6 +105,7 @@ export default function UserDashboard() {
   const [maintenance, setMaintenance] = useState<Maintenance[]>([]);
   const [bookingResource, setBookingResource] = useState<Resource | null>(null);
   const [bookingBusy, setBookingBusy] = useState(false);
+  const [cancellingId, setCancellingId] = useState("");
   const [notice, setNotice] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -215,6 +216,27 @@ export default function UserDashboard() {
     }
   }
 
+  async function cancelBooking(booking: Reservation) {
+    if (!window.confirm(`Cancel your booking for “${booking.resource?.name ?? "this resource"}”?`)) return;
+    setError("");
+    setNotice("");
+    setCancellingId(booking.id);
+    try {
+      await request(`/api/reservations/${encodeURIComponent(booking.id)}`, { method: "DELETE" });
+      await loadDashboard();
+      setNotice("Booking cancelled successfully.");
+    } catch (cause) {
+      const failure = cause as Error & { status?: number };
+      if (failure.status === 401) {
+        router.replace("/login");
+        return;
+      }
+      setError(failure.message || "Could not cancel this booking.");
+    } finally {
+      setCancellingId("");
+    }
+  }
+
   if (loading) return <main className="user-loading"><span className="user-loader"><RefreshCw size={20} /></span><p>Opening your workspace…</p></main>;
 
   return (
@@ -269,7 +291,7 @@ export default function UserDashboard() {
 
             <section className="user-section-block user-latest-block">
               <SectionHeading title="Latest bookings" description="Your most recent reservation activity." action="View all bookings" onAction={() => setSection("bookings")} />
-              {latestBookings.length === 0 ? <EmptyPanel icon={CalendarDays} title="No bookings yet" message="Your reservation requests will appear here." /> : <div className="user-booking-list">{latestBookings.map((booking) => <BookingRow key={booking.id} booking={booking} maintenance={maintenanceByResource.get(booking.resourceId)} />)}</div>}
+              {latestBookings.length === 0 ? <EmptyPanel icon={CalendarDays} title="No bookings yet" message="Your reservation requests will appear here." /> : <div className="user-booking-list">{latestBookings.map((booking) => <BookingRow key={booking.id} booking={booking} maintenance={maintenanceByResource.get(booking.resourceId)} cancelling={cancellingId === booking.id} onCancel={cancelBooking} />)}</div>}
             </section>
           </>
         )}
@@ -283,7 +305,7 @@ export default function UserDashboard() {
 
         {section === "resources" && (resources.length === 0 ? <EmptyPanel icon={DoorOpen} title="No resources yet" message="There are no resources available right now." /> : <div className="user-resource-grid user-resource-grid-full">{resources.map((resource) => <ResourceCard key={resource.id} resource={resource} onBook={() => { setError(""); setBookingResource(resource); }} />)}</div>)}
 
-        {section === "bookings" && (bookings.length === 0 ? <EmptyPanel icon={CalendarDays} title="No bookings yet" message="Your reservation requests will appear here." /> : <div className="user-booking-list user-booking-list-full">{bookings.map((booking) => <BookingRow key={booking.id} booking={booking} maintenance={maintenanceByResource.get(booking.resourceId)} />)}</div>)}
+        {section === "bookings" && (bookings.length === 0 ? <EmptyPanel icon={CalendarDays} title="No bookings yet" message="Your reservation requests will appear here." /> : <div className="user-booking-list user-booking-list-full">{bookings.map((booking) => <BookingRow key={booking.id} booking={booking} maintenance={maintenanceByResource.get(booking.resourceId)} cancelling={cancellingId === booking.id} onCancel={cancelBooking} />)}</div>)}
       </div>
       <footer className="user-footer"><span>primewave<span>lab</span></span><span>Your space, ready when you are.</span></footer>
       {bookingResource && <BookingModal resource={bookingResource} busy={bookingBusy} error={error} onClose={() => { if (!bookingBusy) setBookingResource(null); }} onSubmit={submitBooking} />}
@@ -304,16 +326,18 @@ function ResourceCard({ resource, onBook }: { resource: Resource; onBook: () => 
   return <article className="user-resource-card"><div className="user-resource-card-top"><span className="user-resource-icon"><DoorOpen size={20} /></span><span className={`user-status ${status.className}`}><i />{status.label}</span></div><span className="user-resource-category">{resource.resourceCategory?.name ?? "Resource"}</span><h3>{resource.name}</h3><p className="user-resource-description">{resource.description || "Workspace resource ready for your next project."}</p><div className="user-resource-meta"><span><DoorOpen size={14} />{resource.code}</span>{resource.location && <span><MapPin size={14} />{resource.location}</span>}{resource.maxCapacity != null && <span><UsersRound size={14} />Up to {resource.maxCapacity}</span>}</div><button className="user-book-resource" type="button" disabled={resource.status !== "ACTIVE"} onClick={onBook}>{resource.status === "ACTIVE" ? "Book resource" : "Unavailable"}<ArrowRight size={14} /></button></article>;
 }
 
-function BookingRow({ booking, maintenance }: { booking: Reservation; maintenance?: Maintenance }) {
+function BookingRow({ booking, maintenance, cancelling, onCancel }: { booking: Reservation; maintenance?: Maintenance; cancelling: boolean; onCancel: (booking: Reservation) => void }) {
   const status = bookingStatus(booking);
   const StatusIcon = status.Icon;
   const maintenanceInProgress = maintenance?.maintenancestatus === "INPROGRESS";
+  const canCancel = !booking.cancelledAt && new Date(booking.StartTime).getTime() > Date.now();
   return (
     <article className="user-booking-row">
       <span className="user-booking-icon"><CalendarDays size={19} /></span>
       <div className="user-booking-main"><strong>{booking.title || booking.resource?.name || "Resource reservation"}</strong><span>{booking.resource?.name ?? "Resource details unavailable"}{booking.resource?.code ? ` · ${booking.resource.code}` : ""}</span></div>
       <div className="user-booking-time"><strong>{formatDate(booking.StartTime, true)}</strong><span>Until {formatDate(booking.Endtime, true)}</span></div>
       <span className={`user-status ${status.className}`}><StatusIcon size={13} />{status.label}</span>
+      {canCancel && <button className="user-booking-cancel" type="button" onClick={() => onCancel(booking)} disabled={cancelling} aria-label={`Cancel booking for ${booking.resource?.name ?? "resource"}`} title="Cancel booking">{cancelling ? "Cancelling…" : "Cancel"}</button>}
       <div className={`user-booking-maintenance ${maintenanceInProgress ? "maintenance-active" : maintenance ? "maintenance-complete" : "maintenance-none"}`}>
         <Wrench size={14} />
         <span className="maintenance-label">Resource maintenance</span>

@@ -92,6 +92,9 @@
 .user-status-confirmed { color: #38815e; background: #edf8f1; }
 .user-status-pending { color: #a77734; background: #fff5e5; }
 .user-status-cancelled { color: #a85b52; background: #fff0ee; }
+.user-booking-cancel { min-height: 27px; display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; padding: 0 9px; border: 1px solid #eedbd8; border-radius: 7px; color: #a65951; background: #fffafa; font-size: 8px; font-weight: 650; cursor: pointer; transition: border-color .15s ease, background .15s ease; }
+.user-booking-cancel:hover:not(:disabled) { border-color: #e4bcb6; background: #fff2f0; }
+.user-booking-cancel:disabled { opacity: .58; cursor: wait; }
 .user-empty-panel { min-height: 174px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 22px; border: 1px dashed #dfe8e5; border-radius: 12px; background: rgba(255,255,255,.7); text-align: center; }
 .user-empty-panel > span { width: 39px; height: 39px; display: grid; place-items: center; margin-bottom: 10px; border-radius: 12px; color: #19827c; background: #e9f5f1; }
 .user-empty-panel strong { color: #52656e; font-size: 11px; }
@@ -202,6 +205,7 @@
   .user-booking-main { min-width: calc(100% - 45px); padding-top: 2px; }
   .user-booking-time { width: calc(100% - 94px); margin-left: 39px; }
   .user-booking-row > .user-status { align-self: flex-start; margin-left: auto; }
+  .user-booking-cancel { min-height: 24px; padding: 0 7px; font-size: 7px; }
   .user-booking-maintenance { min-height: 30px; flex-basis: calc(100% - 39px); flex-wrap: wrap; gap: 5px; margin-left: 39px; font-size: 7px; }
   .user-booking-maintenance strong { font-size: 7px; }
   .user-booking-maintenance small { flex-basis: 100%; margin-left: 21px; }
