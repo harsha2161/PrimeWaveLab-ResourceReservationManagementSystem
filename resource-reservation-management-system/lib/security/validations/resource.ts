@@ -24,7 +24,8 @@ export const createResourceSchema = z.object({
     .regex(
       /^[a-zA-Z0-9_-]+$/,
       "Resource code can only contain letters, numbers, hyphens, and underscores (e.g. LAB-01, CONF_ROOM_A)"
-    ),
+    )
+    .optional(),
 
   categoryId: z
     .string()
