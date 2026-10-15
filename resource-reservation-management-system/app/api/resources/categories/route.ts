@@ -2,7 +2,7 @@ import { NextRequest } from "next/server";
 import crypto from "crypto";
 import prisma from "@/lib/prisma";
 import { requireRole, requireAdmin } from "@/lib/security/role-guard";
-import {categorySchema,validateResourceData} from "@/lib/security/validations/resource";
+import { categorySchema, validateResourceData } from "@/lib/security/validations/resource";
 import { withErrorHandler, successResponse } from "@/lib/response/api-response";
 import { BadRequestError, ConflictError } from "@/lib/security/errors";
 
