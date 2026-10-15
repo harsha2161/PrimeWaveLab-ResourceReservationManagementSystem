@@ -5,13 +5,13 @@ import { withErrorHandler, successResponse } from "@/lib/response/api-response";
 import { BadRequestError, ForbiddenError, NotFoundError } from "@/lib/security/errors";
 
 type RouteContext = {
-  params: Promise<{ id: string }> | { id: string };
+  params: Promise<{ id: string }>;
 };
 
 export const DELETE = withErrorHandler(
   async (request: NextRequest, context: RouteContext) => {
     const admin = await requireAdmin(request);
-    const { id } = await Promise.resolve(context.params);
+    const { id } = await context.params;
 
     if (!id) {
       throw new BadRequestError("User ID is required");

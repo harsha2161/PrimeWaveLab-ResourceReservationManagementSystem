@@ -5,7 +5,7 @@ import { withErrorHandler, successResponse } from "@/lib/response/api-response";
 import { BadRequestError, NotFoundError } from "@/lib/security/errors";
 
 interface RouteContext {
-  params: Promise<{ id: string }> | { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export const POST = withErrorHandler(
@@ -13,7 +13,7 @@ export const POST = withErrorHandler(
     // Role validation
     await requireAdmin(request);
 
-    const { id } = await Promise.resolve(context.params);
+    const { id } = await context.params;
 
     if (!id) {
       throw new BadRequestError("Maintenance ID parameter is required");

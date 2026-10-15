@@ -11,13 +11,13 @@ import {
 } from "@/lib/security/errors";
 
 interface RouteContext {
-  params: Promise<{ id: string }> | { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export const GET = withErrorHandler(
   async (request: NextRequest, context: RouteContext) => {
     const authUser = await requireAuthUser(request);
-    const { id } = await Promise.resolve(context.params);
+    const { id } = await context.params;
 
     if (!id) {
       throw new BadRequestError("Reservation ID parameter is required");
@@ -80,7 +80,7 @@ export const GET = withErrorHandler(
 export const DELETE = withErrorHandler(
   async (request: NextRequest, context: RouteContext) => {
     const authUser = await requireAuthUser(request);
-    const { id } = await Promise.resolve(context.params);
+    const { id } = await context.params;
 
     if (!id) {
       throw new BadRequestError("Reservation ID parameter is required");
@@ -126,7 +126,7 @@ export const DELETE = withErrorHandler(
 export const PATCH = withErrorHandler(
   async (request: NextRequest, context: RouteContext) => {
     const authUser = await requireAuthUser(request);
-    const { id } = await Promise.resolve(context.params);
+    const { id } = await context.params;
 
     if (!id) {
       throw new BadRequestError("Reservation ID parameter is required");
