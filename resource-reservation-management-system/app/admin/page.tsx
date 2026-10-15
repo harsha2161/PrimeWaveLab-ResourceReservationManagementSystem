@@ -1,4 +1,3 @@
-import "./admin.css";
 import AdminPanel from "@/components/admin/AdminPanel";
 
 export default function AdminPage() {
